@@ -63,7 +63,7 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
 
     Eigen::Vector3f eye_pos((r + l) / 2, (t + d) / 2，(zNear + zFar) / 2);
     Eigen::Matrix4f translate2= get_view_matrix(eye_pos);
-    projection = translate2 * projection; # 将中心移到原点
+    projection = translate2 * projection; // 将中心移到原点
 
     Eigen::Matrix4f translate3;
     translate3 << 2.0f / (r - l), 0, 0, 0, 0, 2.0f / (t - d), 0, 0, 0, 0, 2.0f / (zNear - zFar), 0, 0, 0, 0, 1;
