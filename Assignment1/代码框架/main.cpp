@@ -26,6 +26,11 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
     // TODO: Implement this function
     // Create the model matrix for rotating the triangle around the Z axis.
     // Then return it.
+    float angle = rotation_angle * MY_PI / 180.0;  // 角度制转化为弧度制
+    Eigen::Matrix4f rotate_matrix;
+    rotate_matrix << std::cos(angle), -std::sin(angle), 0, 0, std::sin(angle), std::cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
+
+    model = rotate_matrix * model;
 
     return model;
 }
@@ -33,6 +38,8 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
                                       float zNear, float zFar)
 {
+    // eye_fov表示视野角度
+    // aspect_ratio表示宽高比
     // Students will implement this function
 
     Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
@@ -41,6 +48,26 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     // Create the projection matrix for the given parameters.
     // Then return it.
 
+    float n = -zNear; // 因为相机看向的是-z
+    float f = -zFar;
+    
+    Eigen::Matrix4f translate1;
+    translate1 << zNear, 0, 0, 0, 0, zNear, 0, 0, 0, 0, 0, zNear + zFar, -zNear * zFar, 0, 0, 1, 0;
+    projection = translate1 * projection; // 变换为正交投影
+
+    float eye_fov_rad = eye_fov * MY_PI / 180.0f;
+    float t = std::tan(eye_fov_rad / 2.0f) * std::abs(n);
+    float b = -t;
+    float r = t * aspect_ratio;
+    float l = -r;
+
+    Eigen::Vector3f eye_pos((r + l) / 2, (t + d) / 2，(zNear + zFar) / 2);
+    Eigen::Matrix4f translate2= get_view_matrix(eye_pos);
+    projection = translate2 * projection; # 将中心移到原点
+
+    Eigen::Matrix4f translate3;
+    translate3 << 2.0f / (r - l), 0, 0, 0, 0, 2.0f / (t - d), 0, 0, 0, 0, 2.0f / (zNear - zFar), 0, 0, 0, 0, 1;
+    projection = translate3 * projection;
     return projection;
 }
 
